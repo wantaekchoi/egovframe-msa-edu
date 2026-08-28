@@ -48,6 +48,10 @@ public class ReserveItemRequestDto extends RequestDto {
         return Objects.nonNull(id) && !Objects.equals("null", id) && !Objects.equals("undefined", id);
     }
 
+    public boolean isUse() {
+        return Boolean.TRUE.equals(isUse);
+    }
+
     public boolean isPopup() {
         return Boolean.TRUE.equals(isPopup);
     }
