@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -79,12 +80,7 @@ public class ReserveService extends ReactiveAbstractService {
                 return Mono.just(reserve);
             })
             .flatMap(reserveRepository::insert)
-            .doOnNext(reserve -> sendAttachmentEntityInfo(streamBridge,
-                AttachmentEntityMessage.builder()
-                    .attachmentCode(reserve.getAttachmentCode())
-                    .entityName(reserve.getClass().getName())
-                    .entityId(reserve.getReserveId())
-                    .build()))
+            .doOnNext(this::sendAttachmentEvent)
             .flatMap(this::convertReserveResponseDto);
     }
 
@@ -145,7 +141,26 @@ public class ReserveService extends ReactiveAbstractService {
                 return Mono.just(reserve);
             })
             .flatMap(reserveRepository::insert)
+            .doOnNext(this::sendAttachmentEvent)
             .flatMap(this::convertReserveResponseDto);
+    }
+
+    /**
+     * 첨부파일을 예약 정보에 연결하기 위해 이벤트 메시지 발행
+     *
+     * @param reserve 저장된 예약
+     */
+    private void sendAttachmentEvent(Reserve reserve) {
+        if (!StringUtils.hasText(reserve.getAttachmentCode())) {
+            return;
+        }
+
+        sendAttachmentEntityInfo(streamBridge,
+            AttachmentEntityMessage.builder()
+                .attachmentCode(reserve.getAttachmentCode())
+                .entityName(reserve.getClass().getName())
+                .entityId(reserve.getReserveId())
+                .build());
     }
 
     /**
