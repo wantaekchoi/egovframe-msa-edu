@@ -288,16 +288,20 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     /**
      * 댓글 정렬 순서 수정
      *
+     * @param boardNo         게시판 번호
+     * @param postsNo         게시물 번호
      * @param groupNo         그룹 번호
      * @param startSortSeq    시작 정렬 순서
      * @param endSortSeq      종료 정렬 순서
      * @param increaseSortSeq 증가 정렬 순서
      * @return Long 수정 건수
      */
-    public Long updateSortSeq(Integer groupNo, Integer startSortSeq, Integer endSortSeq, int increaseSortSeq) {
+    public Long updateSortSeq(Integer boardNo, Integer postsNo, Integer groupNo, Integer startSortSeq, Integer endSortSeq, int increaseSortSeq) {
         return jpaQueryFactory.update(comment)
                 .set(comment.sortSeq, comment.sortSeq.add(increaseSortSeq))
-                .where(isEqualsGroupNo(groupNo),
+                .where(comment.commentId.postsId.boardNo.eq(boardNo),
+                        comment.commentId.postsId.postsNo.eq(postsNo),
+                        isEqualsGroupNo(groupNo),
                         isGoeSortSeq(startSortSeq),
                         isLoeSortSeq(endSortSeq))
                 .execute();

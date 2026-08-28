@@ -138,7 +138,7 @@ public class CommentService extends AbstractService {
         if (requestDto.getParentCommentNo() != null) { // 대댓글
             sortSeq = commentRepository.findNextSortSeq(requestDto.getBoardNo(), requestDto.getPostsNo(), requestDto.getGroupNo(), requestDto.getParentCommentNo(), requestDto.getDepthSeq());
             if (sortSeq != null) {
-                commentRepository.updateSortSeq(requestDto.getGroupNo(), sortSeq, null, 1); // 들어갈 위치와 같거나 큰 대댓글 정렬 순서 +1
+                commentRepository.updateSortSeq(requestDto.getBoardNo(), requestDto.getPostsNo(), requestDto.getGroupNo(), sortSeq, null, 1); // 들어갈 위치와 같거나 큰 대댓글 정렬 순서 +1
             } else {
                 sortSeq = commentRepository.findLastSortSeq(requestDto.getBoardNo(), requestDto.getPostsNo(), requestDto.getGroupNo()); // 들어갈 위치가 검색되지 않으면 max
             }
