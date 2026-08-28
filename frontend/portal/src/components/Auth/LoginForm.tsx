@@ -1,5 +1,6 @@
 import ValidationAlert from '@components/ValidationAlert'
 import { EmailStorage } from '@libs/Storage/emailStorage'
+import { EMAIL_PATTERN } from '@utils'
 import Alert from '@material-ui/lab/Alert'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -77,8 +78,7 @@ const LoginForm = (props: LoginFormProps) => {
           {...register('email', {
             required: `${t('user.email')} ${t('valid.required')}`,
             pattern: {
-              value:
-                /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i,
+              value: EMAIL_PATTERN,
               message: `${t('user.email')} ${t('valid.format_not_match')}`,
             },
           })}
