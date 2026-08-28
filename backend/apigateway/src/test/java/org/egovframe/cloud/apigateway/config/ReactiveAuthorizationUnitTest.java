@@ -3,6 +3,8 @@ package org.egovframe.cloud.apigateway.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.concurrent.TimeoutException;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +17,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import reactor.test.StepVerifier;
 import reactor.core.publisher.Mono;
 
 class ReactiveAuthorizationUnitTest {
@@ -51,6 +54,19 @@ class ReactiveAuthorizationUnitTest {
         assertThatThrownBy(() -> authorization.check(Mono.empty(), authorizationContext()).block())
                 .isInstanceOf(AuthorizationServiceException.class)
                 .hasCauseInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void failsWhenAuthorizationServerNeverResponds() {
+        ExchangeFunction exchangeFunction = request -> Mono.never();
+        ReactiveAuthorization authorization = authorizationWith(exchangeFunction);
+
+        StepVerifier.withVirtualTime(() -> authorization.check(Mono.empty(), authorizationContext()))
+                .thenAwait(Duration.ofSeconds(31))
+                .expectErrorSatisfies(thrown -> assertThat(thrown)
+                        .isInstanceOf(AuthorizationServiceException.class)
+                        .hasCauseInstanceOf(TimeoutException.class))
+                .verify();
     }
 
     private ReactiveAuthorization authorizationReturning(String responseBody) {
