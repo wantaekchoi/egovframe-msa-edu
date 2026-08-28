@@ -51,6 +51,7 @@ const UserInfoModified = (props: UserInfoModifiedPrpps) => {
     try {
       const result = await userService.existsEmail(emailValue, user.userId)
       if (result === true) {
+        setCheckedEmail(false)
         showMessage(t('msg.user.email.exists'), () => {
           setFocus('email')
         })
@@ -103,6 +104,9 @@ const UserInfoModified = (props: UserInfoModifiedPrpps) => {
                 placeholder={t('user.email')}
                 inputMode="email"
                 maxLength={50}
+                onInput={() => {
+                  setCheckedEmail(false)
+                }}
               />
               <ActiveLink href="" handleActiveLinkClick={handleCheckEmail}>
                 {t('label.button.check_email')}
