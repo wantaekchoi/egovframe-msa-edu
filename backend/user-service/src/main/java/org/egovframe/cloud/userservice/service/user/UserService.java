@@ -289,13 +289,13 @@ public class UserService extends AbstractService implements UserDetailsService {
      */
     @Transactional
     public void loginCallback(Long siteId, String email, Boolean successAt, String failContent) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException(getMessage("err.user.notexists")));
+        // 가입되지 않은 이메일로도 로그인 실패 후처리가 들어온다.
+        Optional<User> user = userRepository.findByEmail(email);
 
         if (Boolean.TRUE.equals(successAt)) {
-            user.successLogin();
+            user.ifPresent(User::successLogin);
         } else {
-            user.failLogin();
+            user.ifPresent(User::failLogin);
         }
 
         // 로그인 로그 입력
