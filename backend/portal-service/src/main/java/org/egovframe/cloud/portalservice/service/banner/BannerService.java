@@ -162,11 +162,8 @@ public class BannerService extends AbstractService {
             .orElseThrow(() ->
                 new EntityNotFoundException(getMessage("valid.notexists.format", new Object[]{getMessage("menu.site")}) + " ID= " + requestDto.getSiteId()));
 
-        // 동일한 정렬 순서가 존재할 경우 +1
-        Optional<Banner> authorization = bannerRepository.findBySortSeqAndSiteId(requestDto.getSortSeq(), requestDto.getSiteId());
-        if (authorization.isPresent()) {
-            bannerRepository.updateSortSeq(requestDto.getSortSeq(), null, 1, requestDto.getSiteId());
-        }
+        // 정렬 순서가 변경된 경우 사이 구간 정렬 순서 조정
+        updateSortSeq(entity, requestDto);
 
         // 수정
         entity.update(requestDto.getBannerTypeCode(), requestDto.getBannerTitle(), requestDto.getAttachmentCode(),
@@ -203,6 +200,37 @@ public class BannerService extends AbstractService {
 
         // 삭제
         bannerRepository.delete(entity);
+    }
+
+    /**
+     * 정렬 순서 변경에 따라 사이 구간의 정렬 순서를 조정한다
+     *
+     * @param entity     배너 엔티티
+     * @param requestDto 배너 수정 요청 DTO
+     */
+    private void updateSortSeq(Banner entity, BannerUpdateRequestDto requestDto) {
+        Integer beforeSortSeq = entity.getSortSeq();
+        Integer afterSortSeq = requestDto.getSortSeq();
+
+        if (beforeSortSeq == null) {
+            bannerRepository.updateSortSeq(afterSortSeq, null, 1, requestDto.getSiteId());
+            return;
+        }
+
+        if (afterSortSeq == null) {
+            bannerRepository.updateSortSeq(beforeSortSeq + 1, null, -1, requestDto.getSiteId());
+            return;
+        }
+
+        int compareTo = beforeSortSeq.compareTo(afterSortSeq);
+        if (compareTo > 0) {
+            bannerRepository.updateSortSeq(afterSortSeq, beforeSortSeq - 1, 1, requestDto.getSiteId());
+            return;
+        }
+
+        if (compareTo < 0) {
+            bannerRepository.updateSortSeq(beforeSortSeq + 1, afterSortSeq, -1, requestDto.getSiteId());
+        }
     }
 
     /**
