@@ -201,12 +201,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
                 String username = claims.getSubject();
                 if (username == null) {
-                    // refresh token 에는 subject, authorities 정보가 없다.
                     SecurityContextHolder.getContext().setAuthentication(null);
                 } else {
-                    List<SimpleGrantedAuthority> roleList = Arrays.stream(claims.get(tokenProvider.TOKEN_CLAIM_NAME, String.class).split(","))
-                            .map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList());
+                    // refresh token 에는 authorities 정보가 없다.
+                    String authoritiesStr = claims.get(tokenProvider.TOKEN_CLAIM_NAME, String.class);
+                    List<SimpleGrantedAuthority> roleList = authoritiesStr == null ? List.of() :
+                            Arrays.stream(authoritiesStr.split(","))
+                                    .map(SimpleGrantedAuthority::new)
+                                    .collect(Collectors.toList());
                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(username, null, roleList));
                 }
 
