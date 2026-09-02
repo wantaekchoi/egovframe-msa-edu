@@ -72,3 +72,7 @@ export const translateToLang = (
 
   return data[otherKey]
 }
+
+// 이메일 형식 정규식 (최상위 도메인 길이는 DNS 라벨 최대치인 63자까지 허용)
+export const EMAIL_PATTERN =
+  /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,63}(?:\.[a-z]{2})?)$/i

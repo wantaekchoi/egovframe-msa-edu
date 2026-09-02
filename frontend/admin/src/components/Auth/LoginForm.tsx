@@ -14,6 +14,7 @@ import { useForm } from 'react-hook-form'
 import { PageProps } from '@pages/_app'
 import { EmailStorage } from '@libs/Storage/emailStorage'
 import { DEFAULT_APP_NAME } from '@constants'
+import { EMAIL_PATTERN } from '@utils'
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -112,8 +113,7 @@ const LoginForm = ({ handleLogin, errorMessage }: ILoginFormProps) => {
             {...register('email', {
               required: 'Email Address is required!!',
               pattern: {
-                value:
-                  /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i,
+                value: EMAIL_PATTERN,
                 message: 'Email Address의 형식이 맞지 않습니다.',
               },
             })}
