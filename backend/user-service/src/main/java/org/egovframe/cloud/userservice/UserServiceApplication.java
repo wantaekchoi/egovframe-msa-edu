@@ -27,7 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  *  2026/06/26    이백행         [2026년 컨트리뷰션] @Bean 메서드의 불필요한 public 접근제어자 제거
  * </pre>
  */
-@ComponentScan({"org.egovframe.cloud.common", "org.egovframe.cloud.userservice"})
+@ComponentScan({"org.egovframe.cloud.common", "org.egovframe.cloud.servlet.exception", "org.egovframe.cloud.userservice"})
 @EntityScan({"org.egovframe.cloud.servlet.domain", "org.egovframe.cloud.userservice.domain"})
 @EnableDiscoveryClient
 @SpringBootApplication
