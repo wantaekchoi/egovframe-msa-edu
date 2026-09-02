@@ -1,5 +1,6 @@
 package org.egovframe.cloud.apigateway.config;
 
+import java.time.Duration;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -50,6 +51,10 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Component
 public class ReactiveAuthorization implements ReactiveAuthorizationManager<AuthorizationContext> {
+
+    /** 인가 서버가 응답하지 않을 때 무한 대기하지 않도록 하는 응답 제한 시간 */
+    private static final Duration AUTHORIZATION_TIMEOUT = Duration.ofSeconds(30);
+
 
     private final WebClient.Builder webClientBuilder;
 
@@ -143,6 +148,7 @@ public class ReactiveAuthorization implements ReactiveAuthorizationManager<Autho
             .headers(httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION, token))
             .retrieve()
             .bodyToMono(Boolean.class)
+            .timeout(AUTHORIZATION_TIMEOUT)
             .defaultIfEmpty(false)
             .doOnNext(granted -> log.info("Security AuthorizationDecision granted={}", granted))
             .map(AuthorizationDecision::new)
