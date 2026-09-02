@@ -28,6 +28,11 @@ jobs:
           - reserve-item-service
           - reserve-request-service
           - user-service
+        # 테스트가 통과하는 모듈만 테스트를 포함해 빌드한다.
+        include:
+          - { service: config, gradle: build }
+          - { service: discovery, gradle: build }
+          - { service: egovframe-cloud-module-common, gradle: build }
 
     steps:
       - uses: actions/checkout@v4
@@ -40,4 +45,4 @@ jobs:
           cache: gradle
 
       - name: Build ${{ matrix.service }}
-        run: cd backend/${{ matrix.service }} && ./gradlew --no-daemon build -x test
+        run: cd backend/${{ matrix.service }} && ./gradlew --no-daemon ${{ matrix.gradle || 'build -x test' }}
