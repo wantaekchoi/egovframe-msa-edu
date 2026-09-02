@@ -233,7 +233,7 @@ public class ReserveItemRepositoryImpl implements ReserveItemRepositoryCustom{
             whereCriteria.add(where("category_id").in(requestDto.getCategoryId()));
         }
 
-        if (requestDto.getIsUse()) {
+        if (requestDto.isUse()) {
             whereCriteria.add(where("use_at").isTrue());
         }
 
