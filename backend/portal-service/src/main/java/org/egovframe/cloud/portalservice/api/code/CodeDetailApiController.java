@@ -133,7 +133,7 @@ public class CodeDetailApiController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/api/v1/code-details/{codeId}")
-    public String update(@PathVariable("codeId") String codeId, @RequestBody CodeDetailUpdateRequestDto requestDto) {
+    public String update(@PathVariable("codeId") String codeId, @RequestBody @Valid CodeDetailUpdateRequestDto requestDto) {
         return codeDetailService.update(codeId, requestDto);
     }
 
